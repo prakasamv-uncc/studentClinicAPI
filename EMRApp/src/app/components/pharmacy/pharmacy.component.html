@@ -1,0 +1,138 @@
+<div class="pharmacy-container">
+  <div class="page-header">
+    <h2>🏪 Pharmacy Dispense Queue</h2>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <!-- Dispense Form Modal -->
+  <div class="dispense-modal" *ngIf="showDispenseForm && selectedPrescription">
+    <div class="modal-content">
+      <h4>Dispense Prescription</h4>
+      <div class="prescription-details mb-3">
+        <p><strong>Patient:</strong> {{ selectedPrescription.patientName }}</p>
+        <p><strong>Drug:</strong> {{ selectedPrescription.drugName }}</p>
+        <p><strong>Dosage:</strong> {{ selectedPrescription.dosage }}</p>
+        <p><strong>Prescribed Quantity:</strong> {{ selectedPrescription.quantity }}</p>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Quantity to Dispense *</label>
+        <input
+          type="number"
+          class="form-control"
+          [(ngModel)]="dispenseData.quantityDispensed"
+          min="1"
+          [max]="selectedPrescription.quantity"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Notes</label>
+        <textarea
+          class="form-control"
+          rows="3"
+          [(ngModel)]="dispenseData.notes"
+          placeholder="Enter any notes about this dispense..."
+        ></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" (click)="submitDispense()">
+          ✅ Dispense
+        </button>
+        <button class="btn btn-secondary" (click)="cancelDispense()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Prescriptions -->
+  <div class="section-card mb-4">
+    <h4 class="section-title">⏱️ Pending Prescriptions</h4>
+
+    <div *ngIf="isLoadingPending" class="text-center py-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <div *ngIf="!isLoadingPending && pendingPrescriptions.length === 0" class="alert alert-info">
+      No pending prescriptions to dispense.
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoadingPending && pendingPrescriptions.length > 0">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Drug Name</th>
+            <th>Dosage</th>
+            <th>Quantity</th>
+            <th>Prescriber</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rx of pendingPrescriptions">
+            <td><strong>{{ rx.patientName }}</strong></td>
+            <td>{{ rx.drugName }}</td>
+            <td>{{ rx.dosage }}</td>
+            <td>{{ rx.quantity }}</td>
+            <td>{{ rx.prescriberName }}</td>
+            <td>{{ rx.prescribedDate | date:'short' }}</td>
+            <td>
+              <button class="btn btn-success btn-sm" (click)="openDispenseForm(rx)">
+                💊 Dispense
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Dispense History -->
+  <div class="section-card">
+    <h4 class="section-title">📋 Recent Dispense History</h4>
+
+    <div *ngIf="isLoadingHistory" class="text-center py-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <div *ngIf="!isLoadingHistory && dispenseHistory.length === 0" class="alert alert-info">
+      No dispense history available.
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoadingHistory && dispenseHistory.length > 0">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Prescription ID</th>
+            <th>Pharmacist</th>
+            <th>Quantity Dispensed</th>
+            <th>Date</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dispense of dispenseHistory">
+            <td><strong>#{{ dispense.prescriptionId }}</strong></td>
+            <td>{{ dispense.pharmacistName || 'N/A' }}</td>
+            <td>{{ dispense.quantityDispensed }}</td>
+            <td>{{ dispense.dispenseDate | date:'short' }}</td>
+            <td>{{ dispense.notes || 'No notes' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

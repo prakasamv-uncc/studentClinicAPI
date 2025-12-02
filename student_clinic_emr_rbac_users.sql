@@ -487,6 +487,20 @@ FROM staff_user su
 JOIN department d ON d.name='Pharmacy'
 WHERE su.username IN ('pharm_ivy','pharm_mgr_jack');
 
+
+USE student_clinic_emr;
+
+ALTER TABLE staff_user
+  ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1 AFTER display_name;
+  
+  ALTER TABLE patient
+  ADD COLUMN address_line1 VARCHAR(100) NULL AFTER email,
+  ADD COLUMN address_line2 VARCHAR(100) NULL AFTER address_line1,
+  ADD COLUMN city VARCHAR(50) NULL AFTER address_line2,
+  ADD COLUMN state VARCHAR(20) NULL AFTER city,
+  ADD COLUMN zip VARCHAR(10) NULL AFTER state,
+  ADD COLUMN emergency_contact_name VARCHAR(100) NULL AFTER zip,
+  ADD COLUMN emergency_contact_phone VARCHAR(20) NULL AFTER emergency_contact_name;
 /* ========================= HOW TO USE (examples) =========================
 -- STAFF session (Support/Nurse/Doctor):
 --   SET @app_user_id = (SELECT user_id FROM staff_user WHERE username='support_ella');

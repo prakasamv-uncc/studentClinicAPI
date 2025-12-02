@@ -50,7 +50,7 @@ public class AuthService : IAuthService
             var roles = userAuth.StaffUser.UserRoles.Select(ur => ur.Role.RoleName).ToList();
             var permissions = await GetUserPermissions(userAuth.UserId);
 
-            var token = GenerateJwtToken(userAuth.UserId, userAuth.StaffUser.Username, userAuth.Email, roles);
+            var token = GenerateJwtToken(userAuth.UserId, userAuth.StaffUser.Username, userAuth.Email, roles, request.Password);
 
             return new LoginResponse
             {
@@ -162,7 +162,7 @@ public class AuthService : IAuthService
         }
     }
 
-    private string GenerateJwtToken(int userId, string username, string email, List<string> roles)
+    private string GenerateJwtToken(int userId, string username, string email, List<string> roles, string? password = null)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
@@ -182,6 +182,21 @@ public class AuthService : IAuthService
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
+        // Optionally add a credential hash (username+password) as a claim if configured.
+        // This avoids placing plaintext passwords in tokens. The configuration flag
+        // JwtSettings:IncludeCredentialHashInToken controls this (default: false).
+        var includeCred = false;
+        if (bool.TryParse(jwtSettings["IncludeCredentialHashInToken"], out var parsed))
+        {
+            includeCred = parsed;
+        }
+
+        if (includeCred && !string.IsNullOrEmpty(password))
+        {
+            // store only a SHA256 of username:password to avoid plaintext in token
+            claims.Add(new Claim("cred_hash", HashCredential(username, password)));
+        }
+
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
             audience: jwtSettings["Audience"],
@@ -191,6 +206,14 @@ public class AuthService : IAuthService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private string HashCredential(string username, string password)
+    {
+        using var sha256 = SHA256.Create();
+        var input = $"{username}:{password}";
+        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+        return BitConverter.ToString(bytes).Replace("-", "").ToLower();
     }
 
     private string HashPassword(string password)

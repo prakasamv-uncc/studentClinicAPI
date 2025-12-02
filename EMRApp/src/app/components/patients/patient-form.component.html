@@ -1,0 +1,207 @@
+<div class="form-container">
+  <div class="page-header">
+    <h2>{{ isEditMode ? '✏️ Edit Patient' : '➕ Add New Patient' }}</h2>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoading && isEditMode" class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #patientForm="ngForm" *ngIf="!isLoading || !isEditMode">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="mrn" class="form-label">MRN *</label>
+        <input
+          type="text"
+          class="form-control"
+          id="mrn"
+          name="mrn"
+          [(ngModel)]="patient.mrn"
+          required
+          [disabled]="isEditMode"
+        />
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="dateOfBirth" class="form-label">Date of Birth *</label>
+        <input
+          type="date"
+          class="form-control"
+          id="dateOfBirth"
+          name="dateOfBirth"
+          [(ngModel)]="patient.dateOfBirth"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="firstName" class="form-label">First Name *</label>
+        <input
+          type="text"
+          class="form-control"
+          id="firstName"
+          name="firstName"
+          [(ngModel)]="patient.firstName"
+          required
+        />
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="lastName" class="form-label">Last Name *</label>
+        <input
+          type="text"
+          class="form-control"
+          id="lastName"
+          name="lastName"
+          [(ngModel)]="patient.lastName"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="gender" class="form-label">Gender *</label>
+        <select
+          class="form-select"
+          id="gender"
+          name="gender"
+          [(ngModel)]="patient.gender"
+          required
+        >
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="O">Other</option>
+        </select>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="phoneNumber" class="form-label">Phone Number</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="phoneNumber"
+          name="phoneNumber"
+          [(ngModel)]="patient.phoneNumber"
+        />
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        [(ngModel)]="patient.email"
+      />
+    </div>
+
+    <h5 class="mt-4 mb-3">Address Information</h5>
+
+    <div class="mb-3">
+      <label for="addressLine1" class="form-label">Address Line 1</label>
+      <input
+        type="text"
+        class="form-control"
+        id="addressLine1"
+        name="addressLine1"
+        [(ngModel)]="patient.addressLine1"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="addressLine2" class="form-label">Address Line 2</label>
+      <input
+        type="text"
+        class="form-control"
+        id="addressLine2"
+        name="addressLine2"
+        [(ngModel)]="patient.addressLine2"
+      />
+    </div>
+
+    <div class="row">
+      <div class="col-md-5 mb-3">
+        <label for="city" class="form-label">City</label>
+        <input
+          type="text"
+          class="form-control"
+          id="city"
+          name="city"
+          [(ngModel)]="patient.city"
+        />
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label for="state" class="form-label">State</label>
+        <input
+          type="text"
+          class="form-control"
+          id="state"
+          name="state"
+          [(ngModel)]="patient.state"
+          maxlength="2"
+        />
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <label for="zipCode" class="form-label">Zip Code</label>
+        <input
+          type="text"
+          class="form-control"
+          id="zipCode"
+          name="zipCode"
+          [(ngModel)]="patient.zipCode"
+        />
+      </div>
+    </div>
+
+    <h5 class="mt-4 mb-3">Emergency Contact</h5>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="emergencyContactName" class="form-label">Contact Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="emergencyContactName"
+          name="emergencyContactName"
+          [(ngModel)]="patient.emergencyContactName"
+        />
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="emergencyContactPhone" class="form-label">Contact Phone</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="emergencyContactPhone"
+          name="emergencyContactPhone"
+          [(ngModel)]="patient.emergencyContactPhone"
+        />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!patientForm.form.valid || isLoading"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isEditMode ? 'Update Patient' : 'Create Patient' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

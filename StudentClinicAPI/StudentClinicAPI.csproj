@@ -22,4 +22,9 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
   </ItemGroup>
 
+  <!-- Exclude tools and other helper projects placed under the project folder from being compiled into the web project -->
+  <ItemGroup>
+    <Compile Remove="Tools\**\*.cs" />
+  </ItemGroup>
+
 </Project>

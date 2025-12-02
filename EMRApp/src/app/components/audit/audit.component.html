@@ -1,0 +1,126 @@
+<div class="audit-container">
+  <div class="page-header">
+    <h2>📊 Audit Trail</h2>
+  </div>
+
+  <div class="filters-card mb-4">
+    <h5 class="mb-3">🔍 Filters</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Table</label>
+        <select
+          class="form-select"
+          [(ngModel)]="filterTable"
+          (change)="applyFilters()"
+        >
+          <option *ngFor="let table of availableTables" [value]="table === 'All' ? '' : table">
+            {{ table }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Operation</label>
+        <select
+          class="form-select"
+          [(ngModel)]="filterOperation"
+          (change)="applyFilters()"
+        >
+          <option *ngFor="let op of availableOperations" [value]="op === 'All' ? '' : op">
+            {{ op }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Search</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by table, operation, record ID, or user..."
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && filteredLogs.length === 0" class="alert alert-info">
+    No audit logs found matching your criteria.
+  </div>
+
+  <div class="table-responsive" *ngIf="!isLoading && filteredLogs.length > 0">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Table</th>
+          <th>Operation</th>
+          <th>Record ID</th>
+          <th>Changed By</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of filteredLogs">
+          <td>
+            <small>{{ log.changedAt | date:'short' }}</small>
+          </td>
+          <td>
+            <span class="badge bg-secondary">{{ log.tableName }}</span>
+          </td>
+          <td>
+            <span [class]="getOperationBadgeClass(log.operation)">
+              {{ log.operation }}
+            </span>
+          </td>
+          <td><strong>{{ log.recordId }}</strong></td>
+          <td>{{ log.changedByName || 'Unknown' }}</td>
+          <td>
+            <button
+              class="btn btn-info btn-sm"
+              (click)="viewDetails(log)"
+              title="View Details"
+            >
+              👁️ Details
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-controls" *ngIf="!isLoading && filteredLogs.length > 0">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="text-muted">
+        Showing {{ filteredLogs.length }} of {{ auditLogs.length }} audit logs
+        (Page {{ currentPage }})
+      </div>
+      <div class="btn-group">
+        <button
+          class="btn btn-outline-primary"
+          (click)="loadPreviousPage()"
+          [disabled]="currentPage === 1"
+        >
+          ← Previous
+        </button>
+        <button
+          class="btn btn-outline-primary"
+          (click)="loadNextPage()"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="dashboard-container">
+  <h2 class="mb-4">Welcome, {{ currentUser?.username || 'User' }}!</h2>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card bg-primary">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">{{ stats.patients }}</div>
+        <div class="stat-label">Total Patients</div>
+        <a routerLink="/patients" class="stat-link">View All →</a>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card bg-success">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value">{{ stats.visits }}</div>
+        <div class="stat-label">Total Visits</div>
+        <a routerLink="/visits" class="stat-link">View All →</a>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card bg-info">
+        <div class="stat-icon">💊</div>
+        <div class="stat-value">{{ stats.prescriptions }}</div>
+        <div class="stat-label">Prescriptions</div>
+        <a routerLink="/prescriptions" class="stat-link">View All →</a>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card bg-warning">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value">{{ stats.pending }}</div>
+        <div class="stat-label">Pending Dispense</div>
+        <a routerLink="/pharmacy" class="stat-link">View Queue →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-8">
+      <div class="quick-actions-card">
+        <h4 class="mb-3">Quick Actions</h4>
+        <div class="actions-grid">
+          <a routerLink="/patients/new" class="action-item">
+            <span class="action-icon">➕</span>
+            <span>New Patient</span>
+          </a>
+          <a routerLink="/visits/new" class="action-item">
+            <span class="action-icon">📝</span>
+            <span>New Visit</span>
+          </a>
+          <a routerLink="/prescriptions/new" class="action-item">
+            <span class="action-icon">💉</span>
+            <span>New Prescription</span>
+          </a>
+          <a routerLink="/pharmacy" class="action-item">
+            <span class="action-icon">🏪</span>
+            <span>Pharmacy Queue</span>
+          </a>
+          <a routerLink="/users" class="action-item">
+            <span class="action-icon">👤</span>
+            <span>Manage Users</span>
+          </a>
+          <a routerLink="/audit" class="action-item">
+            <span class="action-icon">📊</span>
+            <span>Audit Logs</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="user-info-card">
+        <h4 class="mb-3">Your Profile</h4>
+        <div class="user-details">
+          <p><strong>Email:</strong> {{ currentUser?.email }}</p>
+          <p><strong>Roles:</strong> {{ currentUser?.roles?.join(', ') || 'N/A' }}</p>
+          <p><strong>User ID:</strong> {{ currentUser?.userId }}</p>
+        </div>
+        <a routerLink="/profile" class="btn btn-outline-primary btn-sm w-100 mt-3">
+          Edit Profile
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
