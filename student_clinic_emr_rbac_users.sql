@@ -500,14 +500,21 @@ WHERE su.username IN ('pharm_ivy','pharm_mgr_jack');
 USE student_clinic_emr;
 
 -- Update patient table with additional address and emergency contact fields
+-- Note: These will error if columns exist, which is safe to ignore
 ALTER TABLE patient
-  ADD COLUMN IF NOT EXISTS address_line1 VARCHAR(100) NULL AFTER email,
-  ADD COLUMN IF NOT EXISTS address_line2 VARCHAR(100) NULL AFTER address_line1,
-  ADD COLUMN IF NOT EXISTS city VARCHAR(50) NULL AFTER address_line2,
-  ADD COLUMN IF NOT EXISTS state VARCHAR(20) NULL AFTER city,
-  ADD COLUMN IF NOT EXISTS zip VARCHAR(10) NULL AFTER state,
-  ADD COLUMN IF NOT EXISTS emergency_contact_name VARCHAR(100) NULL AFTER zip,
-  ADD COLUMN IF NOT EXISTS emergency_contact_phone VARCHAR(20) NULL AFTER emergency_contact_name;
+  ADD COLUMN address_line1 VARCHAR(100) NULL AFTER email,
+  ADD COLUMN address_line2 VARCHAR(100) NULL AFTER address_line1,
+  ADD COLUMN city VARCHAR(50) NULL AFTER address_line2,
+  ADD COLUMN state VARCHAR(20) NULL AFTER city,
+  ADD COLUMN zip VARCHAR(10) NULL AFTER state,
+  ADD COLUMN emergency_contact_name VARCHAR(100) NULL AFTER zip,
+  ADD COLUMN emergency_contact_phone VARCHAR(20) NULL AFTER emergency_contact_name;
+
+-- Add chief_complaint column to visit table (if it doesn't already exist)
+-- Note: This will error if column exists, which is safe to ignore
+ALTER TABLE visit
+  ADD COLUMN chief_complaint VARCHAR(500) NULL AFTER status;
+
 /* ========================= HOW TO USE (examples) =========================
 -- STAFF session (Support/Nurse/Doctor):
 --   SET @app_user_id = (SELECT user_id FROM staff_user WHERE username='support_ella');
