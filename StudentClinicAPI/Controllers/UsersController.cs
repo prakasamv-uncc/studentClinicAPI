@@ -53,6 +53,44 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<UserDto>>> UpdateUser(int id, [FromBody] UserDto dto)
+    {
+        try
+        {
+            var user = await _userService.UpdateUserAsync(id, dto);
+            if (user == null)
+            {
+                return NotFound(ApiResponse<UserDto>.ErrorResult("User not found"));
+            }
+            return Ok(ApiResponse<UserDto>.SuccessResult(user, "User updated successfully"));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating user {id}");
+            return StatusCode(500, ApiResponse<UserDto>.ErrorResult("An error occurred"));
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteUser(int id)
+    {
+        try
+        {
+            var result = await _userService.DeleteUserAsync(id);
+            if (!result)
+            {
+                return NotFound(ApiResponse<bool>.ErrorResult("User not found or could not be deleted"));
+            }
+            return Ok(ApiResponse<bool>.SuccessResult(true, "User deleted successfully"));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error deleting user {id}");
+            return StatusCode(500, ApiResponse<bool>.ErrorResult("An error occurred"));
+        }
+    }
+
     [HttpPost("{userId}/roles/{roleId}")]
     public async Task<ActionResult<ApiResponse<bool>>> AssignRole(int userId, int roleId)
     {

@@ -63,12 +63,9 @@
           </td>
           <td>
             <div class="btn-group btn-group-sm">
-              <a [routerLink]="['/users', user.userId]" class="btn btn-info" title="View">
-                👁️
-              </a>
-              <a [routerLink]="['/users', user.userId, 'edit']" class="btn btn-warning" title="Edit">
+              <button (click)="openEditModal(user)" class="btn btn-warning" title="Edit">
                 ✏️
-              </a>
+              </button>
               <button (click)="deleteUser(user)" class="btn btn-danger" title="Delete">
                 🗑️
               </button>
@@ -81,5 +78,105 @@
 
   <div class="mt-3 text-muted" *ngIf="!isLoading">
     Showing {{ filteredUsers.length }} of {{ users.length }} users
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-backdrop" *ngIf="showEditModal" (click)="closeEditModal()"></div>
+<div class="modal-dialog-custom" *ngIf="showEditModal">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">Edit User</h5>
+      <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">First Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="selectedUser.firstName"
+              name="firstName"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Last Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="selectedUser.lastName"
+              name="lastName"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email <span class="text-danger">*</span></label>
+          <input
+            type="email"
+            class="form-control"
+            [(ngModel)]="selectedUser.email"
+            name="email"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Phone Number</label>
+          <input
+            type="tel"
+            class="form-control"
+            [(ngModel)]="selectedUser.phoneNumber"
+            name="phoneNumber"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [(ngModel)]="selectedUser.isActive"
+              name="isActive"
+              id="isActiveSwitch"
+            />
+            <label class="form-check-label" for="isActiveSwitch">
+              {{ selectedUser.isActive ? 'Active' : 'Inactive' }}
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-3" *ngIf="selectedUser.roles && selectedUser.roles.length > 0">
+          <label class="form-label">Current Roles</label>
+          <div>
+            <span class="badge bg-info me-1" *ngFor="let role of selectedUser.roles">
+              {{ role.roleName }}
+            </span>
+          </div>
+          <small class="text-muted">Contact administrator to change roles</small>
+        </div>
+
+        <div class="mb-3" *ngIf="selectedUser.departments && selectedUser.departments.length > 0">
+          <label class="form-label">Current Departments</label>
+          <div>
+            <span class="badge bg-secondary me-1" *ngFor="let dept of selectedUser.departments">
+              {{ dept.name }}
+            </span>
+          </div>
+          <small class="text-muted">Contact administrator to change departments</small>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="updateUser()" [disabled]="isLoading">
+        {{ isLoading ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
   </div>
 </div>

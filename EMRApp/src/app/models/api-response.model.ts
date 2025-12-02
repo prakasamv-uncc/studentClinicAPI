@@ -63,6 +63,16 @@ export interface Department {
   staffCount?: number;
 }
 
+export interface UpdateUserDto {
+  userId: number;
+  username: string;
+  displayName: string;
+  email: string;
+  isActive: boolean;
+  roles: string[];
+  departments: string[];
+}
+
 export interface Patient {
   patientId: number;
   mrn: string;
@@ -95,6 +105,7 @@ export interface Visit {
   vitalSigns?: string;
   providerId: number;
   providerName?: string;
+  status?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

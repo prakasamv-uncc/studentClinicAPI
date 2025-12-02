@@ -52,6 +52,8 @@ public interface IUserService
 {
     Task<List<UserDto>> GetAllUsersAsync();
     Task<UserDto?> GetUserByIdAsync(int userId);
+    Task<UserDto?> UpdateUserAsync(int userId, UserDto dto);
+    Task<bool> DeleteUserAsync(int userId);
     Task<bool> AssignRoleAsync(int userId, int roleId);
     Task<bool> RemoveRoleAsync(int userId, int roleId);
     Task<bool> AssignDepartmentAsync(int userId, int departmentId);

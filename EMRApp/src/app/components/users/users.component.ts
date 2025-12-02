@@ -18,6 +18,8 @@ export class UsersComponent implements OnInit {
   searchTerm: string = '';
   isLoading: boolean = false;
   errorMessage: string = '';
+  showEditModal: boolean = false;
+  selectedUser: Partial<User> = {};
 
   constructor(private userService: UserService) {}
 
@@ -59,6 +61,58 @@ export class UsersComponent implements OnInit {
       user.email.toLowerCase().includes(term) ||
       user.roles?.some(r => r.roleName.toLowerCase().includes(term))
     );
+  }
+
+  openEditModal(user: User): void {
+    // Create a deep copy to pre-populate the form
+    this.selectedUser = {
+      userId: user.userId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      isActive: user.isActive,
+      roles: user.roles ? [...user.roles] : [],
+      departments: user.departments ? [...user.departments] : []
+    };
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.selectedUser = {};
+  }
+
+  updateUser(): void {
+    if (!this.selectedUser.userId) return;
+
+    this.isLoading = true;
+
+    // Transform the data to match API UserDto structure
+    const updatePayload = {
+      username: this.selectedUser.email?.split('@')[0] || this.selectedUser.firstName || '',
+      displayName: `${this.selectedUser.firstName || ''} ${this.selectedUser.lastName || ''}`.trim(),
+      email: this.selectedUser.email || '',
+      isActive: this.selectedUser.isActive ?? true,
+      roles: this.selectedUser.roles?.map(r => typeof r === 'string' ? r : r.roleName) || [],
+      departments: this.selectedUser.departments?.map(d => typeof d === 'string' ? d : d.name) || []
+    };
+
+    this.userService.updateUser(this.selectedUser.userId, updatePayload as any).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loadUsers();
+          this.closeEditModal();
+        } else {
+          alert('Failed to update user: ' + response.message);
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        alert('An error occurred while updating the user');
+        this.isLoading = false;
+      }
+    });
   }
 
   deleteUser(user: User): void {

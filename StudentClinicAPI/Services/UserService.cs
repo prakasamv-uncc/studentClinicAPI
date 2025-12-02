@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudentClinicAPI.Data;
 using StudentClinicAPI.DTOs;
+using StudentClinicAPI.Models;
 
 namespace StudentClinicAPI.Services;
 
@@ -60,6 +61,100 @@ public class UserService : IUserService
             .FirstOrDefaultAsync();
 
         return user;
+    }
+
+    public async Task<UserDto?> UpdateUserAsync(int userId, UserDto dto)
+    {
+        try
+        {
+            var staffUser = await _context.StaffUsers
+                .Include(su => su.UserAuth)
+                .FirstOrDefaultAsync(su => su.UserId == userId);
+
+            if (staffUser == null) return null;
+
+            // Update staff user fields
+            if (!string.IsNullOrEmpty(dto.Username))
+                staffUser.Username = dto.Username;
+            
+            if (!string.IsNullOrEmpty(dto.DisplayName))
+                staffUser.DisplayName = dto.DisplayName;
+            
+            staffUser.IsActive = dto.IsActive;
+            staffUser.UpdatedAt = DateTime.UtcNow;
+
+            // Update or create UserAuth record
+            if (!string.IsNullOrEmpty(dto.Email))
+            {
+                if (staffUser.UserAuth != null)
+                {
+                    // Update existing UserAuth
+                    staffUser.UserAuth.Email = dto.Email;
+                    staffUser.UserAuth.IsActive = dto.IsActive;
+                    staffUser.UserAuth.UpdatedAt = DateTime.UtcNow;
+                    _context.Entry(staffUser.UserAuth).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                }
+                else
+                {
+                    // Create new UserAuth with default password
+                    var defaultPassword = "Welcome!2025";
+                    var passwordHash = System.Security.Cryptography.SHA256.HashData(
+                        System.Text.Encoding.UTF8.GetBytes(defaultPassword));
+                    var passwordHashString = Convert.ToHexString(passwordHash).ToLower();
+
+                    staffUser.UserAuth = new UserAuth
+                    {
+                        UserId = userId,
+                        Email = dto.Email,
+                        PasswordHash = passwordHashString,
+                        IsActive = dto.IsActive,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+                    _context.UserAuths.Add(staffUser.UserAuth);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return await GetUserByIdAsync(userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error updating user {userId}");
+            return null;
+        }
+    }
+
+    public async Task<bool> DeleteUserAsync(int userId)
+    {
+        try
+        {
+            var staffUser = await _context.StaffUsers
+                .Include(su => su.UserAuth)
+                .Include(su => su.UserRoles)
+                .Include(su => su.StaffDepartments)
+                .FirstOrDefaultAsync(su => su.UserId == userId);
+
+            if (staffUser == null) return false;
+
+            // Remove related records
+            _context.UserRoles.RemoveRange(staffUser.UserRoles);
+            _context.StaffDepartments.RemoveRange(staffUser.StaffDepartments);
+            
+            if (staffUser.UserAuth != null)
+                _context.UserAuths.Remove(staffUser.UserAuth);
+            
+            _context.StaffUsers.Remove(staffUser);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error deleting user {userId}");
+            return false;
+        }
     }
 
     public async Task<bool> AssignRoleAsync(int userId, int roleId)

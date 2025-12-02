@@ -57,10 +57,13 @@ export class PatientFormComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.patient = response.data;
-          // Convert date string to Date object for form
+          // Convert date to yyyy-MM-dd format for HTML date input
           if (this.patient.dateOfBirth) {
             const date = new Date(this.patient.dateOfBirth);
-            this.patient.dateOfBirth = date;
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            this.patient.dateOfBirth = `${year}-${month}-${day}` as any;
           }
         } else {
           this.errorMessage = 'Failed to load patient';
