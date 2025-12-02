@@ -5,6 +5,7 @@ import { LayoutComponent } from './components/layout/layout.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PatientsComponent } from './components/patients/patients.component';
 import { PatientFormComponent } from './components/patients/patient-form.component';
+import { VisitsComponent } from './components/visits/visits.component';
 import { PrescriptionsComponent } from './components/prescriptions/prescriptions.component';
 import { UsersComponent } from './components/users/users.component';
 import { PharmacyComponent } from './components/pharmacy/pharmacy.component';
@@ -23,6 +24,7 @@ export const routes: Routes = [
       { path: 'patients/new', component: PatientFormComponent },
       { path: 'patients/:id', component: PatientFormComponent },
       { path: 'patients/:id/edit', component: PatientFormComponent },
+      { path: 'visits', component: VisitsComponent },
       { path: 'prescriptions', component: PrescriptionsComponent },
       { path: 'users', component: UsersComponent },
       { path: 'pharmacy', component: PharmacyComponent },
