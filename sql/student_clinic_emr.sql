@@ -500,20 +500,90 @@ WHERE su.username IN ('pharm_ivy','pharm_mgr_jack');
 USE student_clinic_emr;
 
 -- Update patient table with additional address and emergency contact fields
--- Note: These will error if columns exist, which is safe to ignore
-ALTER TABLE patient
-  ADD COLUMN address_line1 VARCHAR(100) NULL AFTER email,
-  ADD COLUMN address_line2 VARCHAR(100) NULL AFTER address_line1,
-  ADD COLUMN city VARCHAR(50) NULL AFTER address_line2,
-  ADD COLUMN state VARCHAR(20) NULL AFTER city,
-  ADD COLUMN zip VARCHAR(10) NULL AFTER state,
-  ADD COLUMN emergency_contact_name VARCHAR(100) NULL AFTER zip,
-  ADD COLUMN emergency_contact_phone VARCHAR(20) NULL AFTER emergency_contact_name;
+-- Check and add columns only if they don't exist
+SET @dbname = 'student_clinic_emr';
+SET @tablename = 'patient';
+
+-- Check for address_line1
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'address_line1');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN address_line1 VARCHAR(100) NULL AFTER email;', 
+    'SELECT "Column address_line1 already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Check for address_line2
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'address_line2');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN address_line2 VARCHAR(100) NULL AFTER address_line1;', 
+    'SELECT "Column address_line2 already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Check for city
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'city');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN city VARCHAR(50) NULL AFTER address_line2;', 
+    'SELECT "Column city already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Check for state
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'state');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN state VARCHAR(20) NULL AFTER city;', 
+    'SELECT "Column state already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Check for zip
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'zip');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN zip VARCHAR(10) NULL AFTER state;', 
+    'SELECT "Column zip already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Check for emergency_contact_name
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'emergency_contact_name');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN emergency_contact_name VARCHAR(100) NULL AFTER zip;', 
+    'SELECT "Column emergency_contact_name already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Check for emergency_contact_phone
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'emergency_contact_phone');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE patient ADD COLUMN emergency_contact_phone VARCHAR(20) NULL AFTER emergency_contact_name;', 
+    'SELECT "Column emergency_contact_phone already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Add chief_complaint column to visit table (if it doesn't already exist)
--- Note: This will error if column exists, which is safe to ignore
-ALTER TABLE visit
-  ADD COLUMN chief_complaint VARCHAR(500) NULL AFTER status;
+SET @tablename = 'visit';
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = @dbname AND TABLE_NAME = @tablename AND COLUMN_NAME = 'chief_complaint');
+SET @sql = IF(@col_exists = 0, 
+    'ALTER TABLE visit ADD COLUMN chief_complaint VARCHAR(500) NULL AFTER status;', 
+    'SELECT "Column chief_complaint already exists" AS Info;');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 /* ========================= HOW TO USE (examples) =========================
 -- STAFF session (Support/Nurse/Doctor):
