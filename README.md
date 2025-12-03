@@ -25,6 +25,87 @@ A comprehensive .NET 8 Web API for Student Clinic Electronic Medical Records (EM
 - Visual Studio 2022 / VS Code / Rider
 - MySQL Workbench (optional, for database management)
 
+
+## 5-Minute Setup
+
+### Step 1: Database Setup (2 minutes)
+
+Open MySQL command line or MySQL Workbench and run:
+
+```bash
+# Option A: Using MySQL command line
+mysql -u root -p -h 127.0.0.1 -P 3306
+
+# Then paste and execute:
+CREATE DATABASE IF NOT EXISTS student_clinic_emr;
+```
+
+Then run the SQL scripts in order:
+
+```bash
+# From the project directory (studentClinicAPI folder)
+mysql -u root -p -h 127.0.0.1 -P 3306 student_clinic_emr < student_clinic_emr_rbac_users.sql
+mysql -u root -p -h 127.0.0.1 -P 3306 student_clinic_emr < database_stored_procedures_triggers_indexes.sql
+```
+
+**OR** manually in MySQL Workbench:
+1. Open `student_clinic_emr_rbac_users.sql` and execute
+2. Open `database_stored_procedures_triggers_indexes.sql` and execute
+
+### Step 2: API Setup (2 minutes)
+
+```powershell
+# Navigate to the API project folder
+cd c:\UNCC\ITIS-6120-DBA\Project_2\studentClinicAPI\StudentClinicAPI
+
+# Restore packages
+dotnet restore
+
+# Build project
+dotnet build
+
+# Run the API
+dotnet run
+```
+
+### Step 3: Test the API (1 minute)
+
+1. Open browser: https://localhost:7001/swagger
+2. Click **Authorize** button
+3. Test login endpoint with:
+   - Email: `doc_amy@example.org`
+   - Password: `Welcome!2025`
+4. Copy the token from response
+5. Paste into Authorization field: `Bearer <your-token>`
+6. Click Authorize
+7. Try any endpoint!
+
+
+
+### Step 4:  EMRApp - Web Application setup   (2 minutes)
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.0.
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Running unit tests
+
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+
 ## 🚀 Setup Instructions
 
 ### 1. Database Setup
@@ -39,8 +120,8 @@ First, ensure MySQL is running on `localhost:3306` with the following credential
 
 ```sql
 -- Step 1: Create the base database and tables
--- Run your existing base schema script first (if you have it)
--- OR create a minimal patient/provider/visit schema
+-- Run student_clinic_emr.sql for full DB or to create a minimal patient/provider/visit schema
+
 
 CREATE DATABASE IF NOT EXISTS student_clinic_emr;
 USE student_clinic_emr;
