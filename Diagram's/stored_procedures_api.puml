@@ -1,0 +1,137 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+' ===============================
+'  DATABASE TABLES
+' ===============================
+package "Database Tables" {
+
+  class "patient" as Patient {
+    +patient_id : INT <<PK>>
+    mrn : VARCHAR(20)
+    first_name : VARCHAR(60)
+    last_name : VARCHAR(60)
+    dob : DATE
+    sex : VARCHAR(1)
+    phone : VARCHAR(20)
+    email : VARCHAR(150)
+    address_line1 : VARCHAR(100)
+    address_line2 : VARCHAR(100)
+    city : VARCHAR(50)
+    state : VARCHAR(20)
+    zip : VARCHAR(10)
+    emergency_contact_name : VARCHAR(100)
+    emergency_contact_phone : VARCHAR(20)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+  }
+
+  class "prescription" as Prescription {
+    +prescription_id : INT <<PK>>
+    visit_id : INT
+    drug_code : VARCHAR(50)
+    status : VARCHAR(20)
+  }
+
+  class "audit_log" as AuditLog {
+    +audit_log_id : INT <<PK>>
+    table_name : VARCHAR(50)
+    record_id : INT
+    action : VARCHAR(20)
+    user_id : INT
+    username : VARCHAR(100)
+    old_values : TEXT
+    new_values : TEXT
+    ip_address : VARCHAR(50)
+    user_agent : VARCHAR(255)
+    created_at : TIMESTAMP
+  }
+
+  class "staff_user" as StaffUser {
+    +user_id : INT <<PK>>
+    username : VARCHAR(100)
+    display_name : VARCHAR(150)
+  }
+}
+
+' ===============================
+'  STORED PROCEDURES
+' ===============================
+package "Stored Procedures - API" {
+
+  class "sp_get_patient_by_id" as SP_GetPatient <<procedure>> {
+    --Input Parameters--
+    +p_patient_id : INT
+    --Returns--
+    Patient record with all fields
+    --Description--
+    Retrieves a single patient by ID
+  }
+
+  class "sp_create_patient" as SP_CreatePatient <<procedure>> {
+    --Input Parameters--
+    +p_mrn : VARCHAR(20)
+    +p_first_name : VARCHAR(60)
+    +p_last_name : VARCHAR(60)
+    +p_dob : DATE
+    +p_sex : VARCHAR(1)
+    +p_phone : VARCHAR(20)
+    +p_email : VARCHAR(150)
+    +p_address_line1 : VARCHAR(100)
+    +p_address_line2 : VARCHAR(100)
+    +p_city : VARCHAR(50)
+    +p_state : VARCHAR(20)
+    +p_zip : VARCHAR(10)
+    +p_emergency_contact_name : VARCHAR(100)
+    +p_emergency_contact_phone : VARCHAR(20)
+    --Output Parameters--
+    +p_new_id : INT
+    --Description--
+    Inserts new patient record
+    Logs INSERT action to audit_log
+  }
+
+  class "sp_update_patient" as SP_UpdatePatient <<procedure>> {
+    --Input Parameters--
+    +p_patient_id : INT
+    +p_first_name : VARCHAR(60)
+    +p_last_name : VARCHAR(60)
+    +p_phone : VARCHAR(20)
+    +p_email : VARCHAR(150)
+    --Description--
+    Captures old values (JSON)
+    Updates patient record
+    Captures new values (JSON)
+    Logs UPDATE action to audit_log
+  }
+
+  class "sp_delete_prescription" as SP_DeletePrescription <<procedure>> {
+    --Input Parameters--
+    +p_prescription_id : INT
+    +p_requesting_user_id : INT
+    --Description--
+    Captures old values (JSON)
+    Logs DELETE action to audit_log
+    Deletes prescription record
+  }
+}
+
+' ===============================
+'  RELATIONSHIPS
+' ===============================
+
+' Stored Procedure relationships with tables
+SP_GetPatient ..> Patient : <<reads>>
+SP_CreatePatient ..> Patient : <<inserts>>
+SP_CreatePatient ..> AuditLog : <<logs>>
+SP_UpdatePatient ..> Patient : <<updates>>
+SP_UpdatePatient ..> AuditLog : <<logs>>
+SP_DeletePrescription ..> Prescription : <<deletes>>
+SP_DeletePrescription ..> AuditLog : <<logs>>
+SP_DeletePrescription ..> StaffUser : <<reads>>
+
+' Table relationships
+AuditLog "*" -- "0..1" StaffUser : user_id
+
+@enduml

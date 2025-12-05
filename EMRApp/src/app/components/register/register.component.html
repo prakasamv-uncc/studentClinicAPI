@@ -1,0 +1,187 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="text-center mb-4">
+      <h2 class="mb-3">🏥 Student Clinic EMR</h2>
+      <p class="text-muted">Create your account</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <!-- Name Fields -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="firstName"
+            name="firstName"
+            [(ngModel)]="registerData.firstName"
+            required
+            placeholder="Enter first name"
+            #firstName="ngModel"
+          />
+          <div *ngIf="firstName.invalid && firstName.touched" class="text-danger small mt-1">
+            First name is required
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="lastName"
+            name="lastName"
+            [(ngModel)]="registerData.lastName"
+            required
+            placeholder="Enter last name"
+            #lastName="ngModel"
+          />
+          <div *ngIf="lastName.invalid && lastName.touched" class="text-danger small mt-1">
+            Last name is required
+          </div>
+        </div>
+      </div>
+
+      <!-- Username Field -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          [(ngModel)]="registerData.username"
+          required
+          minlength="3"
+          pattern="^[a-zA-Z0-9_]+$"
+          placeholder="Choose a username"
+          #username="ngModel"
+        />
+        <div *ngIf="username.invalid && username.touched" class="text-danger small mt-1">
+          <span *ngIf="username.errors?.['required']">Username is required</span>
+          <span *ngIf="username.errors?.['minlength']">Username must be at least 3 characters</span>
+          <span *ngIf="username.errors?.['pattern']">Username can only contain letters, numbers, and underscores</span>
+        </div>
+        <small class="text-muted d-block mt-1">
+          Minimum 3 characters, letters, numbers, and underscores only
+        </small>
+      </div>
+
+      <!-- Email Field -->
+      <div class="mb-3">
+        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          [(ngModel)]="registerData.email"
+          required
+          email
+          placeholder="Enter your email"
+          #email="ngModel"
+        />
+        <div *ngIf="email.invalid && email.touched" class="text-danger small mt-1">
+          Please enter a valid email address
+        </div>
+      </div>
+
+      <!-- Phone Field -->
+      <div class="mb-3">
+        <label for="phoneNumber" class="form-label">Phone Number</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="phoneNumber"
+          name="phoneNumber"
+          [(ngModel)]="registerData.phoneNumber"
+          placeholder="555-123-4567"
+        />
+        <small class="text-muted">Optional - Format: 555-123-4567</small>
+      </div>
+
+      <!-- Password Field -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          [(ngModel)]="registerData.password"
+          required
+          minlength="8"
+          placeholder="Enter your password"
+          (input)="checkPasswordStrength()"
+          #password="ngModel"
+        />
+        <div *ngIf="passwordStrength" class="mt-1">
+          <small [ngClass]="getPasswordStrengthClass()">
+            Password strength: <strong>{{ passwordStrength | uppercase }}</strong>
+          </small>
+        </div>
+        <small class="text-muted d-block mt-1">
+          Must be at least 8 characters with uppercase, lowercase, number, and special character
+        </small>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+        <input
+          type="password"
+          class="form-control"
+          id="confirmPassword"
+          name="confirmPassword"
+          [(ngModel)]="registerData.confirmPassword"
+          required
+          placeholder="Re-enter your password"
+          #confirmPassword="ngModel"
+        />
+        <div *ngIf="confirmPassword.value && registerData.password !== registerData.confirmPassword" class="text-danger small mt-1">
+          Passwords do not match
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="alert alert-success" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage }}
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span style="white-space: pre-line;">{{ errorMessage }}</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary w-100 mb-3"
+        [disabled]="!registerForm.form.valid || isLoading"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+      </button>
+
+      <!-- Back to Login Link -->
+      <div class="text-center">
+        <small class="text-muted">
+          Already have an account?
+          <a routerLink="/login" class="text-primary">Sign In</a>
+        </small>
+      </div>
+    </form>
+
+    <!-- Information Box -->
+    <div class="mt-4 p-3 bg-light rounded">
+      <small class="text-muted">
+        <strong><i class="bi bi-info-circle me-1"></i>Registration Information:</strong><br>
+        • Your account will be created with basic access<br>
+        • Contact your administrator for additional permissions<br>
+        • All fields marked with <span class="text-danger">*</span> are required
+      </small>
+    </div>
+  </div>
+</div>

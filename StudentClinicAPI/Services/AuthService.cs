@@ -86,11 +86,13 @@ public class AuthService : IAuthService
                 return null;
             }
 
+            var username = request.Username;
+
             // Create staff user
             var staffUser = new StaffUser
             {
-                Username = request.Username,
-                DisplayName = request.DisplayName ?? request.Username,
+                Username = username,
+                DisplayName = $"{request.FirstName} {request.LastName}",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

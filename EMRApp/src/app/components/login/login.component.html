@@ -33,6 +33,10 @@
         />
       </div>
 
+      <div *ngIf="successMessage" class="alert alert-success" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage }}
+      </div>
+
       <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
         {{ errorMessage }}
       </div>

@@ -1,0 +1,456 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+' ===============================
+'  CORE RBAC & DEPARTMENTS
+' ===============================
+package "Core RBAC & Departments" {
+
+  class "department" as Department {
+    +department_id : INT <<PK>>
+    name : VARCHAR(120)
+  }
+
+  class "provider_department" as ProviderDepartment {
+    +provider_id : INT <<PK>>
+    +department_id : INT <<PK>>
+  }
+
+  class "staff_department" as StaffDepartment {
+    +user_id : INT <<PK>>
+    +department_id : INT <<PK>>
+  }
+
+  class "role" as Role {
+    +role_id : INT <<PK>>
+    role_name : VARCHAR(80)
+  }
+
+  class "permission" as Permission {
+    +permission_id : INT <<PK>>
+    resource : VARCHAR(80)
+    action : VARCHAR(40)
+  }
+
+  class "role_permission" as RolePermission {
+    +role_id : INT <<PK>>
+    +permission_id : INT <<PK>>
+  }
+
+  class "user_role" as UserRole {
+    +user_id : INT <<PK>>
+    +role_id : INT <<PK>>
+  }
+
+  class "staff_user" as StaffUser {
+    +user_id : INT <<PK>>
+    username : VARCHAR(100)
+    display_name : VARCHAR(150)
+    is_active : BOOLEAN
+    created_at : DATETIME(3)
+    updated_at : DATETIME(3)
+  }
+
+  class "user_auth" as UserAuth {
+    +user_id : INT <<PK>>
+    email : VARCHAR(150)
+    password_hash : CHAR(64)
+    is_active : BOOLEAN
+    created_at : DATETIME(3)
+    updated_at : DATETIME(3)
+  }
+
+  class "user_patient_link" as UserPatientLink {
+    +user_id : INT <<PK>>
+    patient_id : INT
+  }
+}
+
+' ===============================
+'  CLINICAL / PHARMACY SIDE
+' ===============================
+package "Clinical / Pharmacy" {
+
+  class "patient" as Patient {
+    +patient_id : INT <<PK>>
+    mrn : VARCHAR(20)
+    first_name : VARCHAR(60)
+    last_name : VARCHAR(60)
+    dob : DATE
+    sex : CHAR(1)
+    phone : VARCHAR(20)
+    email : VARCHAR(150)
+    address_line1 : VARCHAR(100)
+    address_line2 : VARCHAR(100)
+    city : VARCHAR(50)
+    state : VARCHAR(20)
+    zip : VARCHAR(10)
+    emergency_contact_name : VARCHAR(100)
+    emergency_contact_phone : VARCHAR(20)
+    created_at : DATETIME(3)
+    updated_at : DATETIME(3)
+  }
+
+  class "provider" as Provider {
+    +provider_id : INT <<PK>>
+    first_name : VARCHAR(60)
+    last_name : VARCHAR(60)
+    specialty : VARCHAR(120)
+  }
+
+  class "visit" as Visit {
+    +visit_id : INT <<PK>>
+    patient_id : INT
+    provider_id : INT
+    appointment_id : INT
+    check_in_time : DATETIME(3)
+    check_out_time : DATETIME(3)
+    status : VARCHAR(20)
+    chief_complaint : VARCHAR(500)
+  }
+
+  class "appointment" as Appointment {
+    +appointment_id : INT <<PK>>
+    patient_id : INT
+    provider_id : INT
+    scheduled_start : DATETIME(3)
+    scheduled_end : DATETIME(3)
+    status : VARCHAR(20)
+  }
+
+  class "diagnosis" as Diagnosis {
+    +diagnosis_id : INT <<PK>>
+    visit_id : INT
+    icd10_code : VARCHAR(10)
+    description : VARCHAR(500)
+  }
+
+  class "observation" as Observation {
+    +observation_id : INT <<PK>>
+    visit_id : INT
+    observation_type : VARCHAR(50)
+    value : VARCHAR(200)
+    unit : VARCHAR(20)
+  }
+
+  class "prescription" as Prescription {
+    +prescription_id : INT <<PK>>
+    visit_id : INT
+    drug_code : VARCHAR(50)
+    drug_name : VARCHAR(200)
+    dose : VARCHAR(50)
+    dose_unit : VARCHAR(20)
+    route : VARCHAR(20)
+    frequency : VARCHAR(50)
+    duration_days : INT
+    quantity : DECIMAL(10,2)
+    refills : INT
+    start_date : DATE
+    end_date : DATE
+    status : VARCHAR(20)
+  }
+
+  class "order" as Order {
+    +order_id : INT <<PK>>
+    visit_id : INT
+    order_type : VARCHAR(50)
+    loinc_code : VARCHAR(10)
+    description : VARCHAR(500)
+    status : VARCHAR(20)
+  }
+
+  class "result" as Result {
+    +result_id : INT <<PK>>
+    order_id : INT
+    result_value : VARCHAR(200)
+    result_unit : VARCHAR(20)
+    result_date : DATETIME(3)
+  }
+
+  class "billing_line" as BillingLine {
+    +billing_line_id : INT <<PK>>
+    visit_id : INT
+    cpt_code : VARCHAR(10)
+    description : VARCHAR(200)
+    amount : DECIMAL(10,2)
+  }
+
+  class "pharmacy_dispense" as PharmacyDispense {
+    +dispense_id : INT <<PK>>
+    prescription_id : INT
+    dispensed_by_user_id : INT
+    dispensed_qty : DECIMAL(10,2)
+    dispensed_at : DATETIME(3)
+    notes : VARCHAR(200)
+  }
+}
+
+' ===============================
+'  REFERENCE DATA
+' ===============================
+package "Reference Data" {
+
+  class "icd10_ref" as ICD10Ref {
+    +icd10_code : VARCHAR(10) <<PK>>
+    description : VARCHAR(500)
+  }
+
+  class "rx_drug_ref" as RxDrugRef {
+    +drug_code : VARCHAR(50) <<PK>>
+    drug_name : VARCHAR(200)
+  }
+
+  class "loinc_ref" as LoincRef {
+    +loinc_code : VARCHAR(10) <<PK>>
+    description : VARCHAR(500)
+  }
+
+  class "cpt_ref" as CptRef {
+    +cpt_code : VARCHAR(10) <<PK>>
+    description : VARCHAR(200)
+  }
+
+  class "supply" as Supply {
+    +supply_id : INT <<PK>>
+    item_name : VARCHAR(200)
+    quantity : DECIMAL(10,2)
+    unit : VARCHAR(20)
+  }
+
+  class "supply_movement" as SupplyMovement {
+    +movement_id : INT <<PK>>
+    supply_id : INT
+    movement_type : VARCHAR(20)
+    quantity : DECIMAL(10,2)
+    movement_date : DATETIME(3)
+  }
+}
+
+' ===============================
+'  AUDIT & SECURITY
+' ===============================
+package "Audit & Security" {
+
+  class "audit_log" as AuditLog {
+    +audit_log_id : INT <<PK>>
+    table_name : VARCHAR(50)
+    record_id : INT
+    action : VARCHAR(20)
+    user_id : INT
+    username : VARCHAR(100)
+    old_values : TEXT
+    new_values : TEXT
+    ip_address : VARCHAR(50)
+    user_agent : VARCHAR(255)
+    created_at : TIMESTAMP
+  }
+}
+
+' ===============================
+'  STORED PROCEDURES
+' ===============================
+package "Stored Procedures" {
+
+  class "sp_get_patient_by_id" as SP_GetPatient <<procedure>> {
+    --Input--
+    +p_patient_id : INT
+    --Returns--
+    Patient record
+  }
+
+  class "sp_create_patient" as SP_CreatePatient <<procedure>> {
+    --Input--
+    +p_mrn : VARCHAR(20)
+    +p_first_name : VARCHAR(60)
+    +p_last_name : VARCHAR(60)
+    +p_dob : DATE
+    +p_sex : VARCHAR(1)
+    +p_phone : VARCHAR(20)
+    +p_email : VARCHAR(150)
+    +p_address_line1 : VARCHAR(100)
+    +p_address_line2 : VARCHAR(100)
+    +p_city : VARCHAR(50)
+    +p_state : VARCHAR(20)
+    +p_zip : VARCHAR(10)
+    +p_emergency_contact_name : VARCHAR(100)
+    +p_emergency_contact_phone : VARCHAR(20)
+    --Output--
+    +p_new_id : INT
+  }
+
+  class "sp_update_patient" as SP_UpdatePatient <<procedure>> {
+    --Input--
+    +p_patient_id : INT
+    +p_first_name : VARCHAR(60)
+    +p_last_name : VARCHAR(60)
+    +p_phone : VARCHAR(20)
+    +p_email : VARCHAR(150)
+  }
+
+  class "sp_delete_prescription" as SP_DeletePrescription <<procedure>> {
+    --Input--
+    +p_prescription_id : INT
+    +p_requesting_user_id : INT
+  }
+}
+
+' ===============================
+'  SECURE VIEWS
+' ===============================
+package "Secure Views" {
+
+  class "v_support_patient_schedule" as V_SupportSchedule <<view>> {
+    visit_id : INT
+    patient_id : INT
+    mrn : VARCHAR(20)
+    first_name : VARCHAR(60)
+    last_name : VARCHAR(60)
+    dob : DATE
+    phone : VARCHAR(20)
+    email : VARCHAR(150)
+    check_in_time : DATETIME(3)
+    check_out_time : DATETIME(3)
+    visit_status : VARCHAR(20)
+    scheduled_start : DATETIME(3)
+    scheduled_end : DATETIME(3)
+    appt_status : VARCHAR(20)
+    provider_id : INT
+    provider_first : VARCHAR(60)
+    provider_last : VARCHAR(60)
+  }
+
+  class "v_pharmacy_prescriptions" as V_PharmacyPrescriptions <<view>> {
+    prescription_id : INT
+    visit_id : INT
+    patient_id : INT
+    first_name : VARCHAR(60)
+    last_name : VARCHAR(60)
+    dob : DATE
+    drug_code : VARCHAR(50)
+    drug_name : VARCHAR(200)
+    dose : VARCHAR(50)
+    dose_unit : VARCHAR(20)
+    route : VARCHAR(20)
+    frequency : VARCHAR(50)
+    duration_days : INT
+    quantity : DECIMAL(10,2)
+    refills : INT
+    start_date : DATE
+    end_date : DATE
+    status : VARCHAR(20)
+    provider_id : INT
+    provider_first : VARCHAR(60)
+    provider_last : VARCHAR(60)
+  }
+
+  class "v_my_visits" as V_MyVisits <<view>> {
+    All visit columns
+    Filtered by portal_patient_id()
+  }
+
+  class "v_my_diagnoses" as V_MyDiagnoses <<view>> {
+    All diagnosis columns
+    Filtered by portal_patient_id()
+  }
+
+  class "v_my_prescriptions" as V_MyPrescriptions <<view>> {
+    All prescription columns
+    Filtered by portal_patient_id()
+  }
+
+  class "v_my_results" as V_MyResults <<view>> {
+    All result columns
+    Filtered by portal_patient_id()
+  }
+
+  class "v_my_billing" as V_MyBilling <<view>> {
+    All billing_line columns
+    Filtered by portal_patient_id()
+  }
+}
+
+' ===============================
+'  RELATIONSHIPS - RBAC
+' ===============================
+RolePermission "*" -- "1" Role : role_id
+RolePermission "*" -- "1" Permission : permission_id
+UserRole "*" -- "1" StaffUser : user_id
+UserRole "*" -- "1" Role : role_id
+UserAuth "1" -- "1" StaffUser : user_id
+UserPatientLink "1" -- "1" StaffUser : user_id
+UserPatientLink "1" -- "1" Patient : patient_id
+
+' ===============================
+'  RELATIONSHIPS - DEPARTMENTS
+' ===============================
+ProviderDepartment "*" -- "1" Provider : provider_id
+ProviderDepartment "*" -- "1" Department : department_id
+StaffDepartment "*" -- "1" StaffUser : user_id
+StaffDepartment "*" -- "1" Department : department_id
+
+' ===============================
+'  RELATIONSHIPS - CLINICAL
+' ===============================
+Visit "*" -- "1" Patient : patient_id
+Visit "*" -- "1" Provider : provider_id
+Visit "*" -- "0..1" Appointment : appointment_id
+Appointment "*" -- "1" Patient : patient_id
+Appointment "*" -- "1" Provider : provider_id
+Diagnosis "*" -- "1" Visit : visit_id
+Diagnosis "*" -- "0..1" ICD10Ref : icd10_code
+Observation "*" -- "1" Visit : visit_id
+Prescription "*" -- "1" Visit : visit_id
+Prescription "*" -- "0..1" RxDrugRef : drug_code
+Order "*" -- "1" Visit : visit_id
+Order "*" -- "0..1" LoincRef : loinc_code
+Result "*" -- "1" Order : order_id
+BillingLine "*" -- "1" Visit : visit_id
+BillingLine "*" -- "0..1" CptRef : cpt_code
+
+' ===============================
+'  RELATIONSHIPS - PHARMACY
+' ===============================
+PharmacyDispense "*" -- "1" Prescription : prescription_id
+PharmacyDispense "*" -- "1" StaffUser : dispensed_by_user_id
+SupplyMovement "*" -- "1" Supply : supply_id
+
+' ===============================
+'  RELATIONSHIPS - AUDIT
+' ===============================
+AuditLog "*" -- "0..1" StaffUser : user_id
+
+' ===============================
+'  RELATIONSHIPS - PROCEDURES
+' ===============================
+SP_GetPatient ..> Patient : <<reads>>
+SP_CreatePatient ..> Patient : <<inserts>>
+SP_CreatePatient ..> AuditLog : <<logs>>
+SP_UpdatePatient ..> Patient : <<updates>>
+SP_UpdatePatient ..> AuditLog : <<logs>>
+SP_DeletePrescription ..> Prescription : <<deletes>>
+SP_DeletePrescription ..> AuditLog : <<logs>>
+SP_DeletePrescription ..> StaffUser : <<reads>>
+
+' ===============================
+'  RELATIONSHIPS - VIEWS
+' ===============================
+V_SupportSchedule ..> Visit : <<queries>>
+V_SupportSchedule ..> Patient : <<queries>>
+V_SupportSchedule ..> Provider : <<queries>>
+V_SupportSchedule ..> Appointment : <<queries>>
+V_SupportSchedule ..> StaffDepartment : <<filters by>>
+
+V_PharmacyPrescriptions ..> Prescription : <<queries>>
+V_PharmacyPrescriptions ..> Visit : <<queries>>
+V_PharmacyPrescriptions ..> Patient : <<queries>>
+V_PharmacyPrescriptions ..> Provider : <<queries>>
+V_PharmacyPrescriptions ..> RxDrugRef : <<queries>>
+
+V_MyVisits ..> Visit : <<queries>>
+V_MyDiagnoses ..> Diagnosis : <<queries>>
+V_MyPrescriptions ..> Prescription : <<queries>>
+V_MyResults ..> Result : <<queries>>
+V_MyBilling ..> BillingLine : <<queries>>
+
+@enduml

@@ -20,12 +20,16 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
+  username: string;
   email: string;
   password: string;
-  confirmPassword: string;
   firstName: string;
   lastName: string;
   phoneNumber?: string;
+}
+
+export interface RegisterFormData extends RegisterRequest {
+  confirmPassword: string;
 }
 
 export interface ChangePasswordRequest {
