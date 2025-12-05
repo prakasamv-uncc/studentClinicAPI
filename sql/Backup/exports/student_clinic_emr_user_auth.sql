@@ -1,0 +1,57 @@
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
+--
+-- Host: localhost    Database: student_clinic_emr
+-- ------------------------------------------------------
+-- Server version	8.0.36
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `user_auth`
+--
+
+DROP TABLE IF EXISTS `user_auth`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_auth` (
+  `user_id` int NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_hash` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`),
+  CONSTRAINT `fk_userauth_user` FOREIGN KEY (`user_id`) REFERENCES `staff_user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_auth`
+--
+
+LOCK TABLES `user_auth` WRITE;
+/*!40000 ALTER TABLE `user_auth` DISABLE KEYS */;
+INSERT INTO `user_auth` VALUES (1,'test@test.com','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-12-02 03:24:56.910','2025-12-02 03:24:56.910'),(6,'doc_amy@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-12-02 03:15:45.585'),(7,'doc_ben@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(8,'nurse_cara@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(9,'nurse_dan@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(10,'support_ella@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(11,'support_fred@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(12,'manager_gina@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(13,'itadmin_hank@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(14,'pharm_ivy@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(15,'pharm_mgr_jack@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(16,'patient_kim@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(17,'patient_lee@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(18,'patient_mia@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(19,'patient_noah@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(20,'patient_olivia@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(21,'patient_paul@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(22,'patient_quinn@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(23,'patient_ria@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(24,'patient_sam@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776'),(25,'patient_tom@example.org','ce5dfef604343236fe0979e3b081999280d68ca108b7c9ea4797b9de06c2786c',1,'2025-11-10 21:28:27.776','2025-11-10 21:28:27.776');
+/*!40000 ALTER TABLE `user_auth` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-12-03  9:04:47

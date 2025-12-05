@@ -120,7 +120,7 @@ First, ensure MySQL is running on `localhost:3306` with the following credential
 
 ```sql
 -- Step 1: Create the base database and tables
--- Run student_clinic_emr.sql for full DB or to create a minimal patient/provider/visit schema
+-- Run "https://github.com/prakasamv-uncc/studentClinicAPI/blob/main/sql/student_clinic_emr.sql" for full DB or to create a minimal patient/provider/visit schema
 
 
 CREATE DATABASE IF NOT EXISTS student_clinic_emr;
